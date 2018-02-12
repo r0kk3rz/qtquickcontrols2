@@ -16,35 +16,20 @@
 #
 
 
-%define qt5_snapshot 1
-
-Name:           libqt5-qtquickcontrols2
+Name:           qt5-qtquickcontrols2
 Version:        5.6.2
 Release:        0
 Summary:        Qt 5 Quick Controls Addon
 License:        SUSE-LGPL-2.1-with-digia-exception-1.1 or GPL-3.0
 Group:          Development/Libraries/X11
 Url:            http://qt.digia.com
-%define base_name libqt5
-%define real_version 5.6.2
-%define so_version 5.6.2
-%define tar_version qtquickcontrols2-opensource-src-%{real_version}
-Source:         %{tar_version}.tar.xz
+Source:         %{name]-%{version}.tar.xz
 BuildRequires:  fdupes
-BuildRequires:  libQt5Core-private-headers-devel >= %{version}
-BuildRequires:  libQt5Gui-private-headers-devel >= %{version}
-BuildRequires:  libqt5-qtbase-devel >= %{version}
-BuildRequires:  libqt5-qtdeclarative-private-headers-devel >= %{version}
-BuildRequires:  pkgconfig(Qt5Qml) >= %{version}
-BuildRequires:  pkgconfig(Qt5Quick) >= %{version}
-%if %qt5_snapshot
-#to create the forwarding headers
-BuildRequires:  perl
-%endif
-BuildRequires:  xz
-%requires_ge libQt5Widgets5
-%requires_ge libQtQuick5
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRequires:  qt5-qtcore-devel
+BuildRequires:  qt5-qtgui-devel
+BuildRequires:  qt5-qtdeclarative
+BuildRequires:  qt5-qtdeclarative-qtquick-devel
+BuildRequires:  qt5-qmake
 
 %description
 The Qt Quick Controls2 module provides a set of controls that
