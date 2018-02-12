@@ -23,7 +23,7 @@ Summary:        Qt 5 Quick Controls Addon
 License:        SUSE-LGPL-2.1-with-digia-exception-1.1 or GPL-3.0
 Group:          Development/Libraries/X11
 Url:            http://qt.digia.com
-Source:         %{name]-%{version}.tar.xz
+Source:         %{name}-%{version}.tar.xz
 BuildRequires:  fdupes
 BuildRequires:  qt5-qtcore-devel
 BuildRequires:  qt5-qtgui-devel
@@ -35,114 +35,30 @@ BuildRequires:  qt5-qmake
 The Qt Quick Controls2 module provides a set of controls that
 can be used to build complete interfaces in Qt Quick.
 
-%package -n libQt5QuickControls2-5
-Summary:        Qt 5 QuickControl2 Library
-Group:          Development/Libraries/X11
-
-%description -n libQt5QuickControls2-5
-Qt is a set of libraries for developing applications.
-
-This package contains base tools, like string, xml, and network
-handling.
-
-%package -n libQt5QuickTemplates2-5
-Summary:        Qt5 QuickTemplates2 Library
-Group:          Development/Libraries/X11
-
-%description -n libQt5QuickTemplates2-5
-You need this package, if you want to compile programs with qtwebkit.
-
-%package -n libQt5QuickControls2-devel
-Summary:        Qt Development Kit
-Group:          Development/Libraries/X11
-Requires:       libQt5QuickControls2-5 = %{version}
-
-%description -n libQt5QuickControls2-devel
-You need this package, if you want to compile programs with qtwebkit.
-
-%package -n libQt5QuickTemplates2-devel
-Summary:        Qt Development Kit
-Group:          Development/Libraries/X11
-Requires:       libQt5QuickTemplates2-5 = %version
-
-%description -n libQt5QuickTemplates2-devel
-You need this package, if you want to compile programs with qtwebkit.
-
-%package examples
-Summary:        Qt5 quickcontrols2 examples
-Group:          Development/Libraries/X11
-
-%description examples
-Examples for libqt5-qtquickcontrols2 module.
 
 %prep
-%setup -q -n qtquickcontrols2-opensource-src-%{real_version}
+%setup -q -n %{name}-%{version}/qtquickcontrols2
 
 %build
-%if %qt5_snapshot
-#force the configure script to generate the forwarding headers (it checks whether .git directory exists)
-mkdir .git
-%endif
+export QTDIR=/usr/share/qt5
+touch .git
+
 %qmake5
-%make_jobs
+make %{?_smp_flags}
 
 %install
+rm -rf %{buildroot}
 %qmake5_install
-find %{buildroot}/%{_libqt5_libdir} -type f -name '*la' -print -exec perl -pi -e 's,-L%{_builddir}/\S+,,g' {} \;
-find %{buildroot}/%{_libqt5_libdir} -type f -name '*pc' -print -exec perl -pi -e "s, -L$RPM_BUILD_DIR/?\S+,,g" {} \; -exec sed -i -e "s,^moc_location=.*,moc_location=%{_lib}qt5_bindir/moc," -e "s,uic_location=.*,uic_location=%{_lib}qt5_bindir/uic," {} \;
-find %{buildroot}/%{_libqt5_libdir} -type f -name '*prl' -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d" {} \;
 
-# kill .la files
-rm -f %{buildroot}%{_libqt5_libdir}/lib*.la
+%post 
+/sbin/ldconfig
 
-%post -n libQt5QuickControls2-5 -p /sbin/ldconfig
-
-%postun -n libQt5QuickControls2-5 -p /sbin/ldconfig
-
-%post -n libQt5QuickTemplates2-5 -p /sbin/ldconfig
-
-%postun -n libQt5QuickTemplates2-5 -p /sbin/ldconfig
-
-%files -n libQt5QuickControls2-5
-%defattr(-,root,root,755)
-%doc LICENSE.*
-%{_libqt5_libdir}/libQt5QuickControls2.so.*
-
-%files -n libQt5QuickTemplates2-5
-%defattr(-,root,root,755)
-%doc LICENSE.*
-%{_libqt5_libdir}/libQt5QuickTemplates2.so.*
+%postun 
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root,755)
-%doc LICENSE.*
-%{_libqt5_archdatadir}/qml/QtQuick
-%{_libqt5_archdatadir}/qml/Qt
+%{_libdir}/libQt5QuickControls2.so.*
 
-%files -n libQt5QuickControls2-devel
-%defattr(-,root,root,755)
-%doc LICENSE.*
-%exclude %{_libqt5_includedir}/QtQuickControls2/%{so_version}
-%{_libqt5_includedir}/QtQuickControls2
-%{_libqt5_libdir}/cmake/Qt5QuickControls2
-%{_libqt5_libdir}/libQt5QuickControls2.prl
-%{_libqt5_libdir}/libQt5QuickControls2.so
-%{_libqt5_libdir}/pkgconfig/Qt5QuickControls2.pc
-%{_libqt5_archdatadir}/mkspecs/modules/qt_lib_quickcontrols2.pri
-%{_libqt5_archdatadir}/mkspecs/modules/qt_lib_quickcontrols2_private.pri
-
-%files -n libQt5QuickTemplates2-devel
-%defattr(-,root,root,755)
-%doc LICENSE.*
-%exclude %{_libqt5_includedir}/QtQuickTemplates2/%{so_version}
-%{_libqt5_includedir}/QtQuickTemplates2
-%{_libqt5_libdir}/libQt5QuickTemplates2.prl
-%{_libqt5_libdir}/libQt5QuickTemplates2.so
-%{_libqt5_archdatadir}/mkspecs/modules/qt_lib_quicktemplates2_private.pri
-
-%files examples
-%defattr(-,root,root,755)
-%doc LICENSE.*
-%{_libqt5_examplesdir}/
 
 %changelog
